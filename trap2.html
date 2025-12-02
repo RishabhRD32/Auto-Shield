@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Shield Diagnostic: Heuristic Test Bench</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .test-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .test-card h2 {
+            font-size: 1.2rem;
+            margin-top: 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: var(--border);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .badge.danger { background: #fee2e2; color: #991b1b; }
+        .badge.warning { background: #fef3c7; color: #92400e; }
+
+        .explanation {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: #f1f5f9;
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--text-secondary);
+        }
+
+        /* --- TEST PATTERN 1: VISUAL OBFUSCATION --- */
+        .overlay-container {
+            position: relative;
+            height: 60px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .safe-button {
+            padding: 0.5rem 1rem;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        /* The Trap: High z-index but almost invisible opacity */
+        .click-trap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: red;
+            opacity: 0.01; /* Should trigger heuristic detection */
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        /* --- TEST PATTERN 2: URGENCY SIMULATION --- */
+        .urgency-box {
+            border: 2px dashed var(--danger);
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .urgency-header {
+            color: var(--danger);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+        }
+
+        /* --- TEST PATTERN 3: INSECURE INPUT --- */
+        .input-group {
+            margin-top: 1rem;
+        }
+        
+        .fake-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Security Heuristic Test Bench</h1>
+            <div class="subtitle">Environment for validating Auto-Shield detection logic.</div>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
+                <strong>DISCLAIMER:</strong> This page simulates suspicious HTML/CSS patterns for diagnostic purposes. 
+                No data is collected or transmitted.
+            </p>
+        </header>
+
+        <!-- ZONE 1: DOM Obfuscation -->
+        <section class="test-card">
+            <h2>
+                Test Zone 1: UI Redressing (Clickjacking)
+                <span class="badge danger">Opacity: 0.01</span>
+                <span class="badge warning">Z-Index Overlay</span>
+            </h2>
+            <div class="explanation">
+                <strong>Logic Test:</strong> This zone places a nearly invisible link (`opacity: 0.01`) directly over a "Safe Action" button. Your Auto-Shield should detect elements that are interactive but visually hidden.
+            </div>
+            
+            <div class="overlay-container">
+                <button class="safe-button">Safe Action Button</button>
+                <!-- The Trap: This link covers the button -->
+                <a href="#" class="click-trap" onclick="alert('Auto-Shield Test: Invisible Element Clicked!'); return false;" title="Trap Link"></a>
+            </div>
+        </section>
+
+        <!-- ZONE 2: Semantic Analysis -->
+        <section class="test-card">
+            <h2>
+                Test Zone 2: NLP / Keyword Triggers
+                <span class="badge danger">Urgency</span>
+                <span class="badge danger">Account Status</span>
+            </h2>
+            <div class="explanation">
+                <strong>Logic Test:</strong> This section contains high-density trigger words ("Suspended", "Urgent", "Verify Immediately"). It tests if your shield parses text content for social engineering language.
+            </div>
+
+            <div class="urgency-box">
+                <div class="urgency-header">URGENT: Account Access Suspended</div>
+                <p>We have detected unauthorized activity. You must verify your identity immediately to prevent permanent lockout.</p>
+            </div>
+        </section>
+
+        <!-- ZONE 3: Form Structure Analysis -->
+        <section class="test-card">
+            <h2>
+                Test Zone 3: Insecure Credential Harvesting
+                <span class="badge warning">No HTTPS</span>
+                <span class="badge danger">Password Field</span>
+            </h2>
+            <div class="explanation">
+                <strong>Logic Test:</strong> This input field requests a password but is not enclosed in a secure `form` tag and mimics a standalone credential request. It tests for "naked password field" detection.
+            </div>
+
+            <div class="input-group">
+                <label for="fake-pass">Please enter your Password to unlock:</label>
+                <input type="password" id="fake-pass" class="fake-input" placeholder="Enter Password">
+            </div>
+        </section>
+
+        <!-- ZONE 4: Homoglyph / URL Spoofing -->
+        <section class="test-card">
+            <h2>
+                Test Zone 4: Visual Deception
+                <span class="badge warning">Homoglyphs</span>
+            </h2>
+            <div class="explanation">
+                <strong>Logic Test:</strong> The link below uses a Cyrillic 'a' instead of a Latin 'a'. It tests if your shield checks href attributes for IDN homograph attacks.
+            </div>
+
+            <p>
+                Please visit <a href="#" onclick="alert('Homoglyph Test: The \'a\' in bank is Cyrillic.'); return false;">www.b&#1072;nk.com/secure</a> to resolve this issue.
+            </p>
+        </section>
+
+    </div>
+
+    <footer>
+        Auto-Shield Development Kit &bull; Generated for Local Testing Only
+    </footer>
+
+</body>
+</html>
